@@ -22,7 +22,7 @@ router.get('/', (req, res) => { //✔
     })
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', (req, res) => { //✔
   Users.getById(req.params.id)
     .then(user => {
       if(!user) {
@@ -36,8 +36,24 @@ router.get('/:id', (req, res) => {
     })
 });
 
-router.get('/:id/posts', (req, res) => {
-  // do your magic!
+router.get('/:id/posts', (req, res) => { //✔
+  Users.getById(req.params.id)
+    .then(user => {
+      if(!user) {
+        res.status(400).json({ error: "User not found" });
+      } else {
+        Users.getUserPosts(user.id)
+          .then(userPosts => {
+            res.status(200).json(userPosts);
+          })
+          .catch(err => {
+            res.status(500).json({ error: "There was an error with the database" });
+          })
+      }
+    })
+    .catch(err => {
+      res.status(500).json({ error: "There was an error with the database" });
+    })
 });
 
 router.delete('/:id', (req, res) => {
