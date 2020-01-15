@@ -4,7 +4,7 @@ const Users = require('./userDb');
 
 const router = express.Router();
 
-router.post('/', (req, res) => {
+router.post('/', validateUser, (req, res) => {
   // do your magic!
 });
 
@@ -22,7 +22,7 @@ router.get('/', (req, res) => { //✔
     })
 });
 
-router.get('/:id', (req, res) => { //✔
+router.get('/:id', validateUserId, (req, res) => { //✔
   Users.getById(req.params.id)
     .then(user => {
       if(!user) {
