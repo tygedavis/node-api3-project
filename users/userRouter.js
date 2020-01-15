@@ -1,8 +1,8 @@
 const express = require('express');
 
-const router = express.Router();
+const Users = require('./userDb');
 
-const User = require('./userDb');
+const router = express.Router();
 
 router.post('/', (req, res) => {
   // do your magic!
@@ -12,8 +12,14 @@ router.post('/:id/posts', (req, res) => {
   // do your magic!
 });
 
-router.get('/', (req, res) => {
-  // do your magic!
+router.get('/', (req, res) => { //✔
+  Users.get()
+    .then(user => {
+      res.status(200).json(user)
+    })
+    .catch(err => {
+      res.status(500).json({ error: "Unable to retrieve the user data" })
+    })
 });
 
 router.get('/:id', (req, res) => {
@@ -35,7 +41,7 @@ router.put('/:id', (req, res) => {
 // ✔ 2️⃣ Custom middleware (validateUserId())
 function validateUserId(req, res, next) {
   if(req.body.id) {
-    User.getById(req.body.id)
+    Users.getById(req.body.id)
       .then(user => {
         user = req.user;
 
@@ -44,7 +50,8 @@ function validateUserId(req, res, next) {
       .catch(err => {
         res.status(400).json({ message: "Invalid user ID" });
       });
-}
+  };
+};
 
 // ✔ 3️⃣ Custom middleware (validateUser())
 function validateUser(req, res, next) {
@@ -64,6 +71,6 @@ function validatePost(req, res, next) {
   } else {
     next();
   }
-}
+};
 
 module.exports = router;
