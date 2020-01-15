@@ -30,7 +30,8 @@ router.put('/:id', (req, res) => {
   // do your magic!
 });
 
-//custom middleware
+//Todo: 2️⃣ Custom middleware (validateUserId())
+//Todo: 3️⃣ Custom middleware (validateUser())
 
 function validateUserId(req, res, next) {
   // do your magic!
