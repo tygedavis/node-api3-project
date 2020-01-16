@@ -5,7 +5,13 @@ const Users = require('./userDb');
 const router = express.Router();
 
 router.post('/', validateUser, (req, res) => {
-  // do your magic!
+  Users.insert(req.body)
+    .then(newUser => {
+      res.status(201).json(newUser);
+    })
+    .catch(err => {
+      res.status(500).json({ error: "There was an error with the database" });
+    })
 });
 
 router.post('/:id/posts', (req, res) => {
@@ -57,7 +63,7 @@ router.get('/:id/posts', (req, res) => { //✔
 });
 
 router.delete('/:id', (req, res) => {
-  // do your magic!
+  
 });
 
 router.put('/:id', (req, res) => {
@@ -66,8 +72,8 @@ router.put('/:id', (req, res) => {
 
 // ✔ 2️⃣ Custom middleware (validateUserId())
 function validateUserId(req, res, next) {
-  if(req.body.id) {
-    Users.getById(req.body.id)
+  if(req.params.id) {
+    Users.getById(req.params.id)
       .then(user => {
         user = req.user;
 
@@ -82,7 +88,7 @@ function validateUserId(req, res, next) {
 // ✔ 3️⃣ Custom middleware (validateUser())
 function validateUser(req, res, next) {
   if(!req.body) {
-    res.status(400).json({ error: "Invalid user ID" });
+    res.status(400).json({ error: "Invalid name" });
   } else if (!req.body.name) {
     res.status(400).json({ error: "Missing required name field" });
   }
