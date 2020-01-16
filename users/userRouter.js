@@ -1,10 +1,11 @@
 const express = require('express');
 
 const Users = require('./userDb');
+const Posts = require('../posts/postDb');
 
 const router = express.Router();
 
-router.post('/', validateUser, (req, res) => {
+router.post('/', validateUser, (req, res) => { //✔
   Users.insert(req.body)
     .then(newUser => {
       res.status(201).json(newUser);
@@ -14,8 +15,21 @@ router.post('/', validateUser, (req, res) => {
     })
 });
 
-router.post('/:id/posts', (req, res) => {
-  // do your magic!
+router.post('/:id/posts', validatePost, (req, res) => { // ✔
+  const userId = req.params.id;
+  req.body = {...req.body, user_id : userId};
+  // console.log('body', req.body)
+  // console.log('user', req.user)
+
+  Posts.insert(req.body)
+    .then(post => {
+    //   console.log(post);
+      res.status(201).json(post);
+    })
+    .catch(err => {
+      console.log('post catch', err);
+      res.status(500).json({ error: "Error posting" });
+    });
 });
 
 router.get('/', (req, res) => { //✔
@@ -62,8 +76,14 @@ router.delete('/:id', validateUserId, (req, res) => { //✔
     });
 });
 
-router.put('/:id', (req, res) => {
-  // do your magic!
+router.put('/:id', validateUserId, validateUser, (req, res) => {
+  Users.update(req.params.id, req.body)
+    .then(userName => {
+      res.status(200).json(userName);
+    })
+    .catch(err => {
+      res.status(500).json({ error: "The new user could not be updated." });
+    });
 });
 
 // ✔ 2️⃣ Custom middleware (validateUserId())
@@ -76,6 +96,7 @@ function validateUserId(req, res, next) {
         next();
       })
       .catch(err => {
+        console.log('mw catch', err);
         res.status(400).json({ message: "Invalid user ID" });
       });
   };
